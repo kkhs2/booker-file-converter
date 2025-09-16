@@ -1,0 +1,22 @@
+const facia = {
+  BE: 'BE - Best Food Logistics',
+  BU: 'BU - Budgens',
+  BZ: 'BZ - Café Club',
+  CD: 'CD - Fast Food Club',
+  CK: 'CK - Classic Drinks',
+  CS: 'CS - Car Sales',
+  EX: 'EX - Catering Express',
+  FR: 'FR - Comelle',
+  FS: 'FS - Family Shopper',
+  JE: 'JE - Just Eat',
+  LO: 'LO - Londis',
+  NA: 'NA - Non Fascia',
+  OS: 'OS - One Stop',
+  PR: 'PR - Premier Stores',
+  RO: 'RO - Rontec BRP',
+  RP: 'RP - Chef Central',
+  SL: 'SL - Shop Local',
+  SR: 'SR - Rontec Shop N Drive',
+  TC: 'TC - Top Caterers',
+  TP: 'TP - Tesco PFS'
+};

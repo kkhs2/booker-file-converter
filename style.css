@@ -1,0 +1,22 @@
+.booker {
+  background: #2356AA;
+  color: #ffffff;
+}
+
+.booker:hover {
+  background: #000000;
+  color: #ffffff;
+}
+  
+.booker-jumbotron {
+  background-color: #f8f8f8;
+  color: #062F6E;
+}
+
+.required {
+  color: red;
+}
+
+.logo {
+  max-width: 200px;
+}
