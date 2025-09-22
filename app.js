@@ -44,6 +44,9 @@ const processOrderInterface = (data, lines, type) => {
   let ordersData = [];
   let headerIndexes = [];
   let headerLine = [];
+  let ocLines = [];
+  let orderNumbers = [];
+  
   let filteredLines = lines.filter(
     (line) =>
       /*line.substring(0, 2) !== "OT" &&
@@ -54,12 +57,10 @@ const processOrderInterface = (data, lines, type) => {
   );
 
   /* for orders we need to combine order header line to each order detail, ie each header can contain multiple order details lines */
-  ordersData.push(data["oh"].heading + "," + data["ot"].heading + "," + data["oc"].heading + "," + data["od"].heading + "\n");
+  ordersData.push(data["oh"].heading + "," + data["od"].heading + "," + data["oc"].heading + "\n");
 
   filteredLines.map((line, i) => {
     let header = line.substring(0, 2).toLowerCase();
-
-		console.log(header);
 
     let interfaceLength = interfaceData[type][header].heading.split(",").length;
 
@@ -72,8 +73,16 @@ const processOrderInterface = (data, lines, type) => {
     let currentLine = convertLine(line, regex, captureGroups);
 
     /* need a way to construct the lines, to add each oh type line to od type */
+    
     if (header == "oh") {
+      orderNumbers.push({orderNumber: currentLine.split(",")[4], start: i});
+
       headerIndexes.push(i);
+    }
+
+    if (header == 'ot') {
+      let orderObj = orderNumbers.find((order) => order.orderNumber == currentLine.split(",")[3].substring(1));
+      orderObj.end = i;
     }
 
     let groupIndices = matches.indices.groups
@@ -87,8 +96,7 @@ const processOrderInterface = (data, lines, type) => {
     }
     let finalLine = currentLine.split(",");
 
-    /* sack off oc for now */
-    if (header == "od" || header == 'oc' || header == 'ot') {
+    if (header == "od") {
       headerLine = convertLine(
         filteredLines[headerIndexes[headerIndexes.length - 1]],
         interfaceData[type]["oh"].regex,
@@ -102,10 +110,26 @@ const processOrderInterface = (data, lines, type) => {
         finalLine[index] = convertedValues[j];
       }
       finalLine = headerLine.concat(finalLine);
-
       ordersData.push(finalLine + "\n");
     }
+
+    /* need to find and add the order ID to each line, so then we can add this to the oc line to work out which order these belong to */
+    if (header == "oc") {
+      ocLines.push({line: line, index: i});
+    }
+
+  /* for oc lines we need to add them horizontally into one line, but because they are not on the same line we need to find a way to process this. So - how can we do this? For now, the only way I can see is to grab the start and end line index of each order, and then loop back trough each order, look for the oc header lines and then add the oc values to the columns. There might be a better way to do this but let's just make it work for now */
   });
+  
+  orderNumbers.map(order => {
+    ocLines.map(oc => {
+      if (oc.index > order.start && oc.index < order.end) {
+        oc.orderNumber = order.orderNumber;
+      }
+    });
+  });
+
+  ordersData.map(order => console.log(order.split(",")));
   return ordersData;
 };
 
@@ -124,7 +148,7 @@ function readFile(input) {
   reader.onload = function () {
     /* using includes in the file name is a bit crap because for example, product and productgroup will both return a match and we need to tell exactly which file the user is uploading. Need to actually match the file name properly. The assumption here is that the user gets the file and doesn't rename it, so the format will always be <EBIZ or CORD>_<interface name><load of numbers.ext>, extract the interface name from in between */
     let interface = file.name.match(
-      /((EBIZ_|CORD\d*_|SAP2WEB_|OURBOOKER))(?<interface>[a-z]+)(.*)/i
+      /((EBIZ_|CORD\d*_|SAP2WEB_|WEB2SAP_|OURBOOKER))(?<interface>[a-z]+)(.*)/i
     );
 
     let fileType = interface.groups.interface
@@ -141,19 +165,14 @@ function readFile(input) {
       csvData.push(interfaceData[fileType].heading + "\n");
 
       let regex = interfaceData[fileType].regex;
-
       let interfaceLength = interfaceData[fileType].heading.split(",").length;
 
       let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
 
-      /* may have to look at using good ol for loops (because they are supposed to be quicker than map()?) because there are cases where a file
-			could contain 10 million rows and the map function below cannot handle it.  */
-
       splitLines.map((line) => {
-        // check against whitespaces / empty lines in the file
         if (line.length > 0) {
           let matches = regex.exec(line);
-
+          console.log(matches);
           let currentLine = line.replace(regex, captureGroups);
 
           if (matches.groups !== undefined) {
