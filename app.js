@@ -39,49 +39,76 @@ const convertLine = (line, regex, groups) => {
 /* claims is different as well? haven't seen the data for this yet so this is a placeholder at the moment */
 const processClaimsInterface = () => {};
 
+const headerWhichLine = (line) => {
+  return interfaceData["orders"]["oc"][line.charAt(2) - 1].regex;
+};
+
+const regexWhichLine = (line) => {
+  return interfaceData["orders"]["oc"][line.charAt(2) - 1].regex;
+}
+
+const convertOcLine = (line, regex, groups) => {
+
+} 
+
 /* Order interface is a lot different to the others */
-const processOrderInterface = (data, lines, type) => {
+const processOrderInterface = (data, lines, type, fileIndex) => {
   let ordersData = [];
   let headerIndexes = [];
   let headerLine = [];
   let ocLines = [];
   let orderNumbers = [];
-  
+  let ocHeaders = [];
+
   let filteredLines = lines.filter(
     (line) =>
-      /*line.substring(0, 2) !== "OT" &&
-      line.substring(0, 2) !== "OC" &&*/
       line.substring(0, 2) !== "FT" &&
       line.substring(0, 2) !== "FH" &&
       line.length !== 0
   );
 
   /* for orders we need to combine order header line to each order detail, ie each header can contain multiple order details lines */
-  ordersData.push(data["oh"].heading + "," + data["od"].heading + "," + data["oc"].heading + "\n");
+  if (fileIndex == 0) {
+    interfaceData[type]["oc"].forEach((element, index) => {
+      let elementComma = element.heading.split(",");
+      elementComma.forEach(e => {
+        ocHeaders.push(e.split("-")[0] + "-" + e.split("-")[1] + '' + (index + 1) + "-" + e.split("-")[2]);
+      });
+    });
+
+    /*ordersData.push(
+      data["oh"].heading +
+        "," +
+        data["od"].heading +
+        "," +
+        ocHeaders.join(",").slice(0, -1) +
+        "\n"
+    );*/
+  }
 
   filteredLines.map((line, i) => {
     let header = line.substring(0, 2).toLowerCase();
 
-    let interfaceLength = interfaceData[type][header].heading.split(",").length;
+    let interfaceLength = (header != "oc") ? interfaceData[type][header].heading.split(",").length : 3;
 
-    let regex = interfaceData[type][header].regex;
+    let regex = (header != "oc") ? interfaceData[type][header].regex : headerWhichLine(line);
 
     let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
 
-    let matches = regex.exec(line);
+    let matches = (header != "oc") ? regex.exec(line) : regexWhichLine(line).exec(line);
 
     let currentLine = convertLine(line, regex, captureGroups);
-
-    /* need a way to construct the lines, to add each oh type line to od type */
     
+    /* need a way to construct the lines, to add each oh type line to od type */
     if (header == "oh") {
-      orderNumbers.push({orderNumber: currentLine.split(",")[4], start: i});
-
+      orderNumbers.push({ orderNumber: currentLine.split(",")[4], start: i });
       headerIndexes.push(i);
     }
 
-    if (header == 'ot') {
-      let orderObj = orderNumbers.find((order) => order.orderNumber == currentLine.split(",")[3].substring(1));
+    if (header == "ot") {
+      let orderObj = orderNumbers.find(
+        (order) => order.orderNumber == currentLine.split(",")[3].substring(1)
+      );
       orderObj.end = i;
     }
 
@@ -110,106 +137,139 @@ const processOrderInterface = (data, lines, type) => {
         finalLine[index] = convertedValues[j];
       }
       finalLine = headerLine.concat(finalLine);
-      ordersData.push(finalLine + "\n");
+      //ordersData.push(finalLine + "\n");
+      ordersData.push(finalLine);
     }
 
     /* need to find and add the order ID to each line, so then we can add this to the oc line to work out which order these belong to */
     if (header == "oc") {
-      ocLines.push({line: line, index: i});
+      //ocLines.push({ line: line, index: i });
+      let ocLine = convertLine(line, interfaceData[type]["oc"][line.charAt(2) - 1].regex, captureGroupString(interfaceData[type]["oc"][line.charAt(2) - 1].heading.split(",").length).slice(0, -1) + ",");
+     // let o = orderNumbers.map(order => console.log(order));
+      ocLines.push({line: ocLine, index: i});
     }
-
-  /* for oc lines we need to add them horizontally into one line, but because they are not on the same line we need to find a way to process this. So - how can we do this? For now, the only way I can see is to grab the start and end line index of each order, and then loop back trough each order, look for the oc header lines and then add the oc values to the columns. There might be a better way to do this but let's just make it work for now */
   });
   
-  orderNumbers.map(order => {
-    ocLines.map(oc => {
+  orderNumbers.map((order) => {
+    ocLines.map((oc) => {
       if (oc.index > order.start && oc.index < order.end) {
         oc.orderNumber = order.orderNumber;
+        
       }
     });
   });
 
-  ordersData.map(order => console.log(order.split(",")));
-  return ordersData;
+  //ordersData.map((order) => order.split(","));
+  //ocLines.join("").slice(0, -1);
+
+  const finalOrdersData = [];
+  ordersData.map((line, i) => {
+    let orderOcLines = ocLines.filter(oc => oc.orderNumber == line.split(",")[4]);
+    let orderOcLine = orderOcLines.map(o => o.line).join("").slice(0, -1);
+    finalOrdersData.push(line + ",".concat(orderOcLine) + "\n");
+  });
+  console.log(finalOrdersData);
+  return finalOrdersData;
 };
 
-/* TO DO - refactor readFile function as it is very big at the moment, and contains repeated code with the order interface processing */
-function readFile(input) {
-  let file = input.files[0];
-  let reader = new FileReader();
 
-  reader.readAsText(file);
 
-  let csvData = [];
+function getType(file) {
+  const type = file.name.match(
+    /((EBIZ_|CORD\d*_|SAP2WEB_|WEB2SAP_|OURBOOKER))(?<interface>[a-z]+)(.*)/i
+  );
+  const fileType = type.groups.interface
+    ? type.groups.interface.toLowerCase()
+    : "";
+  return fileType;
+}
 
-  /* Clear the previous "click here to download" link if one already exists */
-  document.getElementById("downloadFile").innerHTML = "";
+function readFileAsText(file, index, fileType) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      let csvData = [];
+      const splitLines = reader.result.split(/\r\n|\n/);
+      const lines = splitLines.filter((line) => line.length > 0);
+      if (fileType == "orders") {
+        csvData = processOrderInterface(
+          interfaceData[fileType],
+          lines,
+          fileType,
+          index
+        );
+      } else {
+        csvData.push(interfaceData[fileType].heading + "\n");
 
-  reader.onload = function () {
-    /* using includes in the file name is a bit crap because for example, product and productgroup will both return a match and we need to tell exactly which file the user is uploading. Need to actually match the file name properly. The assumption here is that the user gets the file and doesn't rename it, so the format will always be <EBIZ or CORD>_<interface name><load of numbers.ext>, extract the interface name from in between */
-    let interface = file.name.match(
-      /((EBIZ_|CORD\d*_|SAP2WEB_|WEB2SAP_|OURBOOKER))(?<interface>[a-z]+)(.*)/i
-    );
+        let regex = interfaceData[fileType].regex;
+        let interfaceLength = interfaceData[fileType].heading.split(",").length;
 
-    let fileType = interface.groups.interface
-      ? interface.groups.interface.toLowerCase()
-      : "";
+        let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
 
-    let splitLines = reader.result.split(/\r\n|\n/);
+        splitLines.map((line) => {
+          if (line.length > 0) {
+            let matches = regex.exec(line);
+            let currentLine = line.replace(regex, captureGroups);
 
-    let lines = splitLines.filter((line) => line.length > 0);
+            if (matches.groups !== undefined) {
+              processDecimalValues(
+                matches.groups,
+                Object.values(matches.indices.groups),
+                matches
+              );
 
-    if (fileType == "orders") {
-      csvData = processOrderInterface(interfaceData[fileType], lines, fileType);
-    } else {
-      csvData.push(interfaceData[fileType].heading + "\n");
-
-      let regex = interfaceData[fileType].regex;
-      let interfaceLength = interfaceData[fileType].heading.split(",").length;
-
-      let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
-
-      splitLines.map((line) => {
-        if (line.length > 0) {
-          let matches = regex.exec(line);
-          console.log(matches);
-          let currentLine = line.replace(regex, captureGroups);
-
-          if (matches.groups !== undefined) {
-            processDecimalValues(
-              matches.groups,
-              Object.values(matches.indices.groups),
-              matches
-            );
-
-            let finalLine = currentLine.split(",");
-            for (let j = 0; j < convertedValuesIndexes.length; j++) {
-              let index = convertedValuesIndexes[j] - 1;
-              finalLine[index] = convertedValues[j];
+              let finalLine = currentLine.split(",");
+              for (let j = 0; j < convertedValuesIndexes.length; j++) {
+                let index = convertedValuesIndexes[j] - 1;
+                finalLine[index] = convertedValues[j];
+              }
+              csvData.push(finalLine + "\n");
+            } else {
+              csvData.push(currentLine + "\n");
             }
-            csvData.push(finalLine + "\n");
-          } else {
-            csvData.push(currentLine + "\n");
           }
-        }
-      });
-    }
-    let newFile = new File(csvData, {
-      type: "text/csv;charset=utf-8,",
-    });
+        });
+      }
+      resolve(csvData);
+    };
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+}
 
-    let objUrl = URL.createObjectURL(newFile);
+async function readFile(files) {
 
-    let csvFileLink = document.createElement("a");
-    csvFileLink.setAttribute(
-      "class",
-      "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-    );
-    csvFileLink.setAttribute("href", objUrl);
-    csvFileLink.setAttribute("download", file.name + "ConvertedFile.csv");
-    csvFileLink.textContent =
-      "Click to download converted " + fileType.toUpperCase() + " file";
+  document.getElementById("downloadFile").innerHTML = "";
+  const uploadedFiles = [...files.files];
 
-    document.getElementById("downloadFile").append(csvFileLink);
-  };
+  const fileType = getType(uploadedFiles[0]);
+
+  const fileNames = uploadedFiles.map((file) => getType(file));
+
+  if (!fileNames.every((fileName) => fileName === fileType)) {
+    return;
+  }
+
+  const processedData = await Promise.all(
+    uploadedFiles.map(async (file, index) => {
+      return await readFileAsText(file, index, fileType);
+    })
+  );
+
+  const convertedFile = new File(processedData, {
+    type: "text/csv;charset=utf-8,",
+  });
+
+  const objUrl = URL.createObjectURL(convertedFile);
+
+  const convertedFileLink = document.createElement("a");
+  convertedFileLink.setAttribute(
+    "class",
+    "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+  );
+  convertedFileLink.setAttribute("href", objUrl);
+  convertedFileLink.setAttribute("download", fileType + "ConvertedFile.csv");
+  convertedFileLink.textContent =
+    "Click to download converted " + fileType.toUpperCase() + " file";
+  document.getElementById("downloadFile").append(convertedFileLink);
 }

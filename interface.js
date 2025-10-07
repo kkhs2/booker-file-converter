@@ -84,10 +84,23 @@ const interfaceData = {
         heading: 'INTCORD-OD-RECTYPE,INTCORD-OD-SUCODE,INTCORD-OD-DESC,INTCORD-OD-ITM-IN-SELL-UNT,INTCORD-OD-PCK-SIZE,INTCORD-OD-QUANTITY,INTCORD-OD-NOTES,INTCORD-OD-PRICE,SUPPLIER-OWN-ITEM-CODE,MARKETPLACE-PRODUCT-CODE',
         regex: /^(.{2})(.{6})(.{28})(.{4})(.{7})(.{5})(.{255})(?<decimal1_2>[^.]{8})(.{15})(.{7,})$/d
       },
-      oc: {
-        heading: 'INTCORD-OC-RECTYPE,(OC1="Delivery"; OC2="Substitute"; OC3="Delivery Charge - not used"; OC4="Picking"),INTCORD-OC-COMMENT',
-        regex: /^(.{2})(.{1})(.{0,254})$/d
-      },
+      oc: [{
+          heading: 'INTCORD-OC-RECTYPE,INTCORD-OC-COMMENTTYPE,INTCORD-OC-COMMENT',
+          regex: /^(.{2})(.{1})(.{254})$/d
+        },
+        {
+          heading: 'INTCORD-OC-RECTYPE,INTCORD-OC-COMMENTTYPE,INTCORD-OC-COMMENT',
+          regex: /^(.{2})(.{1})(.{1})$/d
+        },
+        {
+          heading: 'INTCORD-OC-RECTYPE,INTCORD-OC-COMMENTTYPE,INTCORD-OC-COMMENT',
+          regex: /^(.{2})(.{1})(.{6})$/d
+        },
+        {
+          heading: 'INTCORD-OC-RECTYPE,INTCORD-OC-COMMENTTYPE,INTCORD-OC-COMMENT',
+          regex: /^(.{2})(.{1})(.{254})$/d
+        }
+      ],
       ot: {
         heading: 'INTCORD-OT-RECTYPE,INTCORD-OT-DEPOT,INTCORD-OT-CUSTOMER-NUM,INTCORD-OT-ORDER-NUM,INTCORD-OT-DET-LINE-CNT',
         regex: /^(.{2})(.{5})(.{9})(.{11})(.{5})$/d

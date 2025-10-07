@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="shortcut icon" type="image/x-icon" href="https://www.booker.co.uk/images/favicon.ico" />
+		<link rel="shortcut icon" type="image/png" sizes="32x32" href="https://www.booker.co.uk/assets2/favicon-48x48.png">
+    <link rel="shortcut icon" type="image/png" sizes="16x16" href="https://www.booker.co.uk/assets2/favicon-16x16.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+
     <title>Custom Tools for data processing</title>
     <script src="https://cdn.tailwindcss.com"></script>
 		<script>
@@ -21,8 +24,6 @@
 		src="https://code.jquery.com/jquery-3.7.1.slim.js"
 		integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc="
 		crossorigin="anonymous"></script>
-		
-		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 		<script src="./branch.js"></script>
 		<script src="./interface.js"></script>
 		<script src="./sector.js"></script>
@@ -56,7 +57,7 @@
 				file:rounded-full file:border-0
 				file:text-sm file:font-semibold
 				file:bg-booker file:text-white
-				hover:file:cursor-pointer" name="fileConvert" id="fileConvert" onchange="readFile(this)"/>
+				hover:file:cursor-pointer" name="fileConvert" id="fileConvert" onchange="readFile(this)" multiple />
 				
 			</div>
 		</div>
@@ -354,6 +355,8 @@
 </footer>
 
 	</body>
-	<script>$('#year').text((new Date).getFullYear());</script>
+	<script>
+		$('#year').text((new Date).getFullYear());
+	</script>
 </html>
 
