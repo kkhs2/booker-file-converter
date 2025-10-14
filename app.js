@@ -31,6 +31,27 @@ const processDecimalValues = (groups, groupIndices, matches) => {
   });
 };
 
+/*const processNamedGroupsValues = (groups, groupIndices, matches) => {
+  Object.entries(groups).map(group => {    
+    let key = group[0].split("_")[0];
+    if (key.includes("decimal")) {
+      let decimal = group[1];
+      convertedValues.push(parseFloat(group[1].slice(0, -decimal) + "." + group[1].slice(-decimal)));
+    }
+    if (key.includes("quote")) {
+      console.log(group[1]);
+      convertedValues.push('"'+ group[1] +'"');
+    }
+  });
+  groupIndices.map((group) => {
+    matches.indices.map((match, k) => {
+      if (JSON.stringify(group) == JSON.stringify(match)) {
+        convertedValuesIndexes.push(k);
+      }
+    });
+  });
+};*/
+
 /* helper function to convert a line with the given regex, useful especially for the Orders Interface */
 const convertLine = (line, regex, groups) => {
   return line.replace(regex, groups);
@@ -46,10 +67,6 @@ const headerWhichLine = (line) => {
 const regexWhichLine = (line) => {
   return interfaceData["orders"]["oc"][line.charAt(2) - 1].regex;
 }
-
-const convertOcLine = (line, regex, groups) => {
-
-} 
 
 /* Order interface is a lot different to the others */
 const processOrderInterface = (data, lines, type, fileIndex) => {
@@ -76,14 +93,14 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
       });
     });
 
-    /*ordersData.push(
+
+    ordersData.push(
       data["oh"].heading +
         "," +
         data["od"].heading +
         "," +
-        ocHeaders.join(",").slice(0, -1) +
-        "\n"
-    );*/
+        ocHeaders.join(",")
+    );
   }
 
   filteredLines.map((line, i) => {
@@ -136,39 +153,34 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
         let index = convertedValuesIndexes[j] - 1;
         finalLine[index] = convertedValues[j];
       }
-      finalLine = headerLine.concat(finalLine);
-      //ordersData.push(finalLine + "\n");
-      ordersData.push(finalLine);
+      let headerFinalLine = headerLine.concat(finalLine);
+      ordersData.push(headerFinalLine);
     }
 
     /* need to find and add the order ID to each line, so then we can add this to the oc line to work out which order these belong to */
     if (header == "oc") {
-      //ocLines.push({ line: line, index: i });
       let ocLine = convertLine(line, interfaceData[type]["oc"][line.charAt(2) - 1].regex, captureGroupString(interfaceData[type]["oc"][line.charAt(2) - 1].heading.split(",").length).slice(0, -1) + ",");
-     // let o = orderNumbers.map(order => console.log(order));
       ocLines.push({line: ocLine, index: i});
     }
   });
-  
-  orderNumbers.map((order) => {
+
+  let orderNumbersArr = orderNumbers.filter(order => Object.hasOwn(order, "end"));
+
+  orderNumbersArr.map((order) => {
     ocLines.map((oc) => {
       if (oc.index > order.start && oc.index < order.end) {
         oc.orderNumber = order.orderNumber;
-        
       }
     });
   });
 
-  //ordersData.map((order) => order.split(","));
-  //ocLines.join("").slice(0, -1);
-
   const finalOrdersData = [];
-  ordersData.map((line, i) => {
-    let orderOcLines = ocLines.filter(oc => oc.orderNumber == line.split(",")[4]);
+  ordersData.map(line => {
+    let lineOrderNumber = line.split(",")[4];
+    let orderOcLines = ocLines.filter(oc => oc.orderNumber == lineOrderNumber);
     let orderOcLine = orderOcLines.map(o => o.line).join("").slice(0, -1);
     finalOrdersData.push(line + ",".concat(orderOcLine) + "\n");
   });
-  console.log(finalOrdersData);
   return finalOrdersData;
 };
 
@@ -199,18 +211,18 @@ function readFileAsText(file, index, fileType) {
           index
         );
       } else {
-        csvData.push(interfaceData[fileType].heading + "\n");
-
+          if (index == 0) {
+            csvData.push(interfaceData[fileType].heading + "\n");
+          }
         let regex = interfaceData[fileType].regex;
         let interfaceLength = interfaceData[fileType].heading.split(",").length;
-
+      
         let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
 
         splitLines.map((line) => {
           if (line.length > 0) {
             let matches = regex.exec(line);
             let currentLine = line.replace(regex, captureGroups);
-
             if (matches.groups !== undefined) {
               processDecimalValues(
                 matches.groups,
@@ -230,7 +242,7 @@ function readFileAsText(file, index, fileType) {
           }
         });
       }
-      resolve(csvData);
+      resolve(csvData.join(""));
     };
     reader.onerror = reject;
     reader.readAsText(file);
@@ -257,7 +269,7 @@ async function readFile(files) {
   );
 
   const convertedFile = new File(processedData, {
-    type: "text/csv;charset=utf-8,",
+    type: "text/csv;charset=utf-8",
   });
 
   const objUrl = URL.createObjectURL(convertedFile);
@@ -267,9 +279,10 @@ async function readFile(files) {
     "class",
     "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
   );
+
   convertedFileLink.setAttribute("href", objUrl);
   convertedFileLink.setAttribute("download", fileType + "ConvertedFile.csv");
-  convertedFileLink.textContent =
-    "Click to download converted " + fileType.toUpperCase() + " file";
+  convertedFileLink.textContent = "Click to download converted " + fileType.toUpperCase() + " file";
   document.getElementById("downloadFile").append(convertedFileLink);
+
 }
