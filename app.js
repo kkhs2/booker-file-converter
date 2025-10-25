@@ -75,7 +75,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
   let headerLine = [];
   let ocLines = [];
   let orderNumbers = [];
-  let ocHeaders = [];
+  let ocHeaders = [];;
 
   let filteredLines = lines.filter(
     (line) =>
@@ -93,7 +93,6 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
       });
     });
 
-
     ordersData.push(
       data["oh"].heading +
         "," +
@@ -105,7 +104,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
 
   filteredLines.map((line, i) => {
     let header = line.substring(0, 2).toLowerCase();
-
+    
     let interfaceLength = (header != "oc") ? interfaceData[type][header].heading.split(",").length : 3;
 
     let regex = (header != "oc") ? interfaceData[type][header].regex : headerWhichLine(line);
@@ -115,7 +114,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     let matches = (header != "oc") ? regex.exec(line) : regexWhichLine(line).exec(line);
 
     let currentLine = convertLine(line, regex, captureGroups);
-    
+
     /* need a way to construct the lines, to add each oh type line to od type */
     if (header == "oh") {
       orderNumbers.push({ orderNumber: currentLine.split(",")[4], start: i });
@@ -139,7 +138,6 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
       processDecimalValues(groups, groupIndices, matches);
     }
     let finalLine = currentLine.split(",");
-
     if (header == "od") {
       headerLine = convertLine(
         filteredLines[headerIndexes[headerIndexes.length - 1]],
@@ -179,7 +177,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     let lineOrderNumber = line.split(",")[4];
     let orderOcLines = ocLines.filter(oc => oc.orderNumber == lineOrderNumber);
     let orderOcLine = orderOcLines.map(o => o.line).join("").slice(0, -1);
-    finalOrdersData.push(line + ",".concat(orderOcLine) + "\n");
+    finalOrdersData.push(line + ",".concat(orderOcLine.slice(0, 537)) + "\n");
   });
   return finalOrdersData;
 };
@@ -202,7 +200,8 @@ function readFileAsText(file, index, fileType) {
     reader.onload = () => {
       let csvData = [];
       const splitLines = reader.result.split(/\r\n|\n/);
-      const lines = splitLines.filter((line) => line.length > 0);
+      const lines = splitLines.filter((line) => line.length > 0).map(line => line.replace(/,/g, " "));
+
       if (fileType == "orders") {
         csvData = processOrderInterface(
           interfaceData[fileType],
