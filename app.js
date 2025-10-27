@@ -218,7 +218,7 @@ function readFileAsText(file, index, fileType) {
       
         let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
 
-        splitLines.map((line) => {
+        lines.map((line) => {
           if (line.length > 0) {
             let matches = regex.exec(line);
             let currentLine = line.replace(regex, captureGroups);

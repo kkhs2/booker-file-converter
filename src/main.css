@@ -1,0 +1,330 @@
+@import 'tailwindcss' prefix(tw);
+
+@theme {
+  --color-primary-50: #fff0eb;
+  --color-primary-100: #ffe6df;
+  --color-primary-200: #ffd0c2;
+  --color-primary-300: #ffa185;
+  --color-primary-400: #ff7349;
+  --color-primary-500: #ff480c;
+  --color-primary-600: #dd3300;
+  --color-primary-700: #aa2700;
+  --color-primary-800: #401103;
+  --color-primary: #ff480c;
+  --color-primary-d30: #d30;
+
+  --color-secondary-50: #faf9f50d;
+  --color-secondary-100: #faf9f51a;
+  --color-secondary-200: #faf9f533;
+  --color-secondary-300: #faf9f54d;
+  --color-secondary-400: #faf9f566;
+  --color-secondary-500: #faf9f580;
+  --color-secondary-600: #faf9f599;
+  --color-secondary-700: #faf9f5b3;
+  --color-secondary-800: #faf9f5cc;
+  --color-secondary-900: #faf9f5e6;
+  --color-secondary-1000: #faf9f5;
+  --color-secondary-1100: #f5f4f0;
+  --color-secondary-1200: #ebeae6;
+  --color-secondary-1300: #d1cfc7;
+  --color-secondary-2000: #1f1e19;
+
+  --color-tertiary-50: #f2fdfb;
+  --color-tertiary-100: #dcfaf5;
+  --color-tertiary-200: #cef8f2;
+  --color-tertiary-300: #bdf5ed;
+  --color-tertiary-400: #45e3cc;
+  --color-tertiary-500: #1fceb5;
+  --color-tertiary-600: #1aad98;
+  --color-tertiary-700: #127869;
+  --color-tertiary-800: #093e37;
+
+  --color-blue-100: #dee6ed;
+  --color-blue-500: #507594;
+  --color-blue-600: #26176f;
+
+  --color-red-100: #fce8e8;
+  --color-red-200: #f8c2c2;
+  --color-red-300: #f29393;
+  --color-red-400: #ec5f5f;
+  --color-red-500: #dc3545;
+  --color-red-600: #c32733;
+  --color-red-700: #9e1f28;
+  --color-red-800: #7b181f;
+  --color-red-900: #5c1117;
+  --color-red-1000: #aa2700;
+
+  --color-orange-100: #fff4e5;
+  --color-orange-200: #ffe4bf;
+  --color-orange-300: #ffd08a;
+  --color-orange-400: #ffb74d;
+  --color-orange-500: #ff9500;
+  --color-orange-600: #db7c00;
+  --color-orange-700: #b86200;
+  --color-orange-800: #944d00;
+  --color-orange-900: #783c00;
+
+  --color-yellow-100: #fff8d1;
+  --color-yellow-200: #fff3ad;
+  --color-yellow-300: #ffe65c;
+  --color-yellow-400: #ffe23d;
+  --color-yellow-500: #ffdf2b;
+  --color-yellow-600: #ffd905;
+  --color-yellow-700: #ffe500;
+  --color-yellow-800: #fdcf00;
+
+  --color-green-100: #e6f9e6;
+  --color-green-200: #c1f2c1;
+  --color-green-300: #92e892;
+  --color-green-400: #5fda5f;
+  --color-green-500: #28a745;
+  --color-green-600: #218838;
+  --color-green-700: #19692c;
+  --color-green-800: #145222;
+  --color-green-900: #0e3d19;
+
+  --color-beige: #0c0c0d;
+  --color-beige-500: #0c0c0d0d;
+  --color-beige-1000: #ece8e1;
+
+  --color-black-100: #0000000d;
+  --color-black-200: #0000001a;
+  --color-black-300: #00000033;
+  --color-black-400: #00000066;
+  --color-black-500: #000000b3;
+  --color-black-600: #000000cc;
+  --color-black-700: #000000d9;
+  --color-black-800: #000000e6;
+  --color-black-900: #000000f2;
+  --color-black-1000: #000000ff;
+
+  --color-white-100: #ffffff0d;
+  --color-white-200: #ffffff1a;
+  --color-white-300: #ffffff33;
+  --color-white-400: #ffffff66;
+  --color-white-500: #ffffffb3;
+  --color-white-600: #ffffffcc;
+  --color-white-700: #ffffffd9;
+  --color-white-800: #ffffffe6;
+  --color-white-900: #fffffff2;
+  --color-white-1000: #ffffffff;
+
+  --color-grey-100: #f5f5f5;
+  --color-grey-200: #f2f2f2;
+  --color-grey-300: #ececec;
+  --color-grey-400: #cdcdcd;
+  --color-grey-500: #949494;
+  --color-grey-600: #767676;
+  --color-grey-700: #5a5a5a;
+  --color-grey-800: #434343;
+  --color-grey-900: #303030;
+  --color-grey-1000: #242424;
+  --color-grey-1100: #ebeae6;
+
+  --color-londis: #48ac35;
+  --color-londis-light: #dcf8d6;
+  --color-premier: #4c0743;
+  --color-premier-light: #f9e4f7;
+  --color-budgens: #124232;
+  --color-budgens-light: #dcf2eb;
+  --color-shoplocally: #dfeff5;
+  --color-shopndrive: #e6ecff;
+  --color-ontradeclub: #e6ebf4;
+  --color-familyshopper: #ffe6e8;
+
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1313px;
+  --breakpoint-2xl: 1440px;
+
+  /* Typography */
+  --text-xs: 0.625rem; /* 10px */
+  --text-2xs: 0.688rem; /* 11px */
+  --text-sm: 0.75rem; /* 12px */
+  --text-13: 0.813rem; /* 13px */
+  --text-base: 0.875rem; /* 14px */
+  --text-lg: 1rem; /* 16px */
+  --text-xl: 1.125rem; /* 18px */
+  --text-2xl: 1.25rem; /* 20px */
+  --text-3xl: 1.5rem; /* 24px */
+  --text-4xl: 1.75rem; /* 28px */
+  --text-5xl: 2rem; /* 32px */
+  --text-6xl: 2.5rem; /* 40px */
+  --text-7xl: 3rem; /* 48px */
+  --text-8xl: 3.75rem; /* 60px */
+  --text-9xl: 5.5rem; /* 88px */
+
+  --font-sans: Inter, sans-serif;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-grey-200, currentColor);
+  }
+
+  /* Add default font family */
+  html,
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+  :root:has(.tw-no-body-scroll) {
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  .tw-border-top-dotted {
+    border-top: 1px dotted transparent;
+    border-image: repeating-linear-gradient(
+        to right,
+        black 0,
+        black 1px,
+        transparent 1px,
+        transparent var(--dot-spacing, 4px)
+      )
+      1;
+  }
+
+  /* Underline Fade Effect with Dynamic Color */
+  .tw-underline-fade {
+    --underline-color: #fff; /* Default color */
+    position: relative;
+    padding-bottom: 0.2em;
+    padding-top: 0.2em;
+  }
+
+  .tw-underline-fade-primary {
+    --underline-color: #ff480c;
+  }
+
+  .tw-underline-fade::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.1em;
+    background-color: var(--underline-color);
+    opacity: 0;
+    transition:
+      opacity 300ms,
+      transform 300ms;
+  }
+
+  .tw-underline-fade:hover::after,
+  .tw-underline-fade:focus::after {
+    opacity: 1;
+    transform: translateY(0.2em);
+  }
+
+  .tw-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .tw-hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+
+    /* custom input search close button style */
+    .tw-search-input::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      height: 24px;
+      width: 24px;
+      background: url("data:image/svg+xml;utf8,<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M12 4L4 12M4 4L12 12' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>")
+        no-repeat center;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+  }
+
+  /* Animation for carousel bullet */
+  @keyframes slide-right {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .tw-search-input::-webkit-search-cancel-button:hover {
+    background: #f2f2f2
+      url("data:image/svg+xml;utf8,<svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M12 4L4 12M4 4L12 12' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>")
+      no-repeat center;
+  }
+
+  .tw-active-bullet .tw-animate-slide-right {
+    animation: slide-right 3s ease-in-out forwards;
+    background-color: #f2f2f2;
+  }
+  .tw-feature-card-gradient {
+    background: linear-gradient(
+      183deg,
+      rgba(0, 0, 0, 0) 13.19%,
+      rgba(0, 0, 0, 0.4) 79.57%
+    );
+  }
+
+  .tw-container {
+    @apply tw:mx-auto tw:w-full tw:max-w-[1728px] tw:px-5 tw:xl:px-16;
+  }
+
+  .tw-container-full {
+    @apply tw:mx-auto tw:w-full tw:max-w-[1728px];
+  }
+
+  .tw-container-half {
+    @apply tw:mx-auto tw:w-full tw:max-w-[902px];
+  }
+
+  .swiper-slide-thumb-active img {
+    @apply tw:border-b-4 tw:border-b-primary-500;
+  }
+
+  .tw-rail-container header {
+    @apply tw:pl-5 tw:lg:pl-16;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .tw-no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .tw-no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Animation for payment container slide-down */
+  @keyframes slide-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-12px);
+      max-height: 0;
+    }
+    50% {
+      opacity: 0.7;
+      transform: translateY(-4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 600px;
+    }
+  }
+}
