@@ -268,25 +268,13 @@ async function readFile(files) {
   
   return new Promise((resolve) => {
     resolve(downloadFile(fileType, processedData));
-  }).then((result) => console.log('works'));
-  
-}
-
-function testFunc() {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve('Async operation completed!'), 3000); // Resolves after 3 seconds
   });
 }
 
-async function loadingSpinner(files) {  
-  document.getElementById("loaderDiv").innerHTML = `<div class="loader"></div>`;
+async function loadingSpinner(files) {
+  document.getElementById("loaderDiv").innerHTML = `<div id="loader"></div>`;
   const result = await readFile(files);
 }
-
-const errorDownloadingFile = () => {
-
-}
-
 
 async function downloadFile(type, data) {
   const convertedFile = new File(data, {
@@ -305,7 +293,7 @@ async function downloadFile(type, data) {
   convertedFileLink.setAttribute("href", objUrl);
   convertedFileLink.setAttribute("download", type + "ConvertedFile.csv");
   convertedFileLink.textContent = "Click to download converted " + type.toUpperCase() + " file";
-  document.getElementById("loaderDiv").remove();
+  document.getElementById("loader").remove();
   document.getElementById("downloadFile").append(convertedFileLink);
 }
 

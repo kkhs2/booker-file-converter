@@ -32,7 +32,7 @@
 		<script src="./interface.js"></script>
 		<script src="./app.js"></script>
 		<style>
-			.loader {
+			#loader {
     width: 48px;
     height: 48px;
     border: 5px solid #FFF;
@@ -41,6 +41,7 @@
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+	
     }
 		@keyframes rotation {
     0% {
@@ -72,13 +73,6 @@
 			<p class="mt-8 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">The aim is to be able to convert all interfaces into readable csv format.</p>
 			<div class="mt-10 flex items-center justify-center gap-x-6">
 		
-				<!--<input type="file" class="block w-full text-sm text-slate-500
-				file:mr-4 file:py-2 file:px-4
-				file:rounded-full file:border-0
-				file:text-sm file:font-semibold
-				file:bg-booker file:text-white
-				hover:file:cursor-pointer" name="fileConvert" id="fileConvert" onchange="readFile(this)" multiple />-->
-
 				<input type="file" class="block w-full text-sm text-slate-500
 				file:mr-4 file:py-2 file:px-4
 				file:rounded-full file:border-0
