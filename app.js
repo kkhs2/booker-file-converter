@@ -249,7 +249,6 @@ function readFileAsText(file, index, fileType) {
 }
 
 async function readFile(files) {
-
   document.getElementById("downloadFile").innerHTML = "";
   const uploadedFiles = [...files.files];
 
@@ -266,22 +265,47 @@ async function readFile(files) {
       return await readFileAsText(file, index, fileType);
     })
   );
+  
+  return new Promise((resolve) => {
+    resolve(downloadFile(fileType, processedData));
+  }).then((result) => console.log('works'));
+  
+}
 
-  const convertedFile = new File(processedData, {
+function testFunc() {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve('Async operation completed!'), 3000); // Resolves after 3 seconds
+  });
+}
+
+async function loadingSpinner(files) {  
+  document.getElementById("loaderDiv").innerHTML = `<div class="loader"></div>`;
+  const result = await readFile(files);
+}
+
+const errorDownloadingFile = () => {
+
+}
+
+
+async function downloadFile(type, data) {
+  const convertedFile = new File(data, {
     type: "text/csv;charset=utf-8",
   });
 
   const objUrl = URL.createObjectURL(convertedFile);
 
   const convertedFileLink = document.createElement("a");
+  
   convertedFileLink.setAttribute(
     "class",
     "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
   );
 
   convertedFileLink.setAttribute("href", objUrl);
-  convertedFileLink.setAttribute("download", fileType + "ConvertedFile.csv");
-  convertedFileLink.textContent = "Click to download converted " + fileType.toUpperCase() + " file";
+  convertedFileLink.setAttribute("download", type + "ConvertedFile.csv");
+  convertedFileLink.textContent = "Click to download converted " + type.toUpperCase() + " file";
+  document.getElementById("loaderDiv").remove();
   document.getElementById("downloadFile").append(convertedFileLink);
-
 }
+
