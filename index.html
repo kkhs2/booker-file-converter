@@ -21,15 +21,27 @@
 			}
 		</script>
 	    <script>
-			window.addEventListener('CookiebotOnDialogDisplay', () => {
-  				window.addEventListener('CookiebotOnAccept', () => {
-					console.log("clicked on accept");
-				});
+			window.dataLayer = window.dataLayer || [];
+        	
+			function testPageViewEvent() {
+				var user = '{"event":"pageView","pageData":{"pageURL":"/","pageLanguage":"en","pageType":"Home"},"platformData":{"country":"United Kingdom","property":"Booker Adobe property","application":"container-ppe"},"customerData":{"licensed":false,"authenticated":false},"basketData":{}}';
+        		if (user != '') {
+            		user = JSON.parse(user);
+            		window.dataLayer.push(user);
+        		}
+        		console.log(user);
+			}
+				window.addEventListener('CookiebotOnDialogDisplay', () => {
+  					window.addEventListener('CookiebotOnAccept', () => {
+						console.log("clicked on accept");
+						testPageViewEvent();
+					});
 
-				window.addEventListener('CookiebotOnDecline', () => {
-					console.log("clicked on reject");
+					window.addEventListener('CookiebotOnDecline', () => {
+						console.log("clicked on reject");
+						testPageViewEvent();
+					});
 				});
-			});
 	  	</script>
 	  	<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
 		<script
