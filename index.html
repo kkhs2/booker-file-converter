@@ -20,10 +20,10 @@
 				}
 			}
 		</script>
-	    <script type="text/javascript">
-			function CookiebotOnDialogDisplay() {
-				console.log("cookiebot displaying");
-			}
+	    <script>
+			window.addEventListener('CookiebotOnDialogDisplay', () => {
+  			console.log('Banner is visible! (event listener version)');
+		});
 	  	</script>
 	  	<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
 		<script
