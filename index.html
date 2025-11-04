@@ -8,15 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
 
     <title>Custom Tools for data processing</title>
-	  <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
-	  <script type="text/javascript">
-  window.addEventListener('CookiebotOnAccept', function (e) {
-    if (Cookiebot.consent.marketing) 
-      {
-        console.log("accepted cookies");
-      } 
-  }, false);
-</script>
     <script src="https://cdn.tailwindcss.com"></script>
 		<script>
 			tailwind.config = {
@@ -29,7 +20,15 @@
 				}
 			}
 		</script>
-	  
+	  	  <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
+	  <script type="text/javascript">
+  window.addEventListener('CookiebotOnAccept', function (e) {
+    if (Cookiebot.consent.marketing) 
+      {
+        console.log("accepted cookies");
+      } 
+  }, false);
+</script>
 		<script
 		src="https://code.jquery.com/jquery-3.7.1.slim.js"
 		integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc="
