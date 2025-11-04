@@ -21,23 +21,17 @@
 			}
 		</script>
 	    <script type="text/javascript">
-		  let bannerIsOpen = false;
-		function testPageViewEvent() {
-		  window.dataLayer = window.dataLayer || [];
-		  var user = '{"event":"pageView","pageData":{"pageURL":"/","pageLanguage":"en","pageType":"Home"},"platformData":{"country":"United Kingdom","property":"Booker Adobe property","application":"container-ppe"},"customerData":{"licensed":false,"authenticated":false},"basketData":{}}';
-        	if (user != '') {
-            	user = JSON.parse(user);
-            	window.dataLayer.push(user);
-        	}
-        	console.log(user);
+		 	if (!Cookiebot.consent.userConsentGiven) {
+  				// Listen for the first consent action
+  				window.addEventListener('CookiebotOnAccept', () => {
+    			console.log('User accepted for the first time');
+  			});
+  			window.addEventListener('CookiebotOnDecline', () => {
+    			console.log('User declined for the first time');
+  			});
 		}
-  		 
-		window.addEventListener('CookiebotOnLoad', function () {
-  			console.log('Banner loaded');
-		});
-
-	  </script>
-	  	  <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
+	  	</script>
+	  	<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
 		<script
 		src="https://code.jquery.com/jquery-3.7.1.slim.js"
 		integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc="
