@@ -22,8 +22,14 @@
 		</script>
 	    <script>
 			window.addEventListener('CookiebotOnDialogDisplay', () => {
-  			console.log('Banner is visible! (event listener version)');
-		});
+  				window.addEventListener('CookiebotOnAccept', () => {
+					console.log("clicked on accept");
+				});
+
+				window.addEventListener('CookiebotOnDecline', () => {
+					console.log("clicked on reject");
+				});
+			});
 	  	</script>
 	  	<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
 		<script
