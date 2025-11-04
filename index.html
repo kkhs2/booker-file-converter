@@ -28,6 +28,10 @@
         console.log("accepted cookies");
       } 
   }, false);
+
+  window.addEventListener('CookiebotOnDecline', function (e) {
+    console.log("decline cookies"); 
+  });
 </script>
 		<script
 		src="https://code.jquery.com/jquery-3.7.1.slim.js"
