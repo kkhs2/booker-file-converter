@@ -31,27 +31,13 @@
         	}
         	console.log(user);
 		}
-  		  function CookiebotOnDialogDisplay() {
-    		bannerIsOpen = true;
-  		  }
-
-		   function CookiebotOnAccept() {
-    		if (bannerIsOpen) {
-      			console.log("User just accepted cookies for the first time!");
-      			bannerIsOpen = false;
-				testPageViewEvent();
-    	    }
-  		   }
-
-  		   function CookiebotOnDecline() {
-    		if (bannerIsOpen) {
-      			console.log("User just declined cookies for the first time!");
-      			bannerIsOpen = false;
-      			testPageViewEvent();
-    		}
-		  }
+  		 
+		window.addEventListener('CookiebotOnLoad', function () {
+  			bannerIsOpen = true;
+		});
 
 		console.log(bannerIsOpen);
+
 	  </script>
 	  	  <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="3eaa87f5-ce7b-40c3-bc07-d805436f36f6" data-blockingmode="auto" type="text/javascript"></script>
 		<script
