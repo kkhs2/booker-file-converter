@@ -22,16 +22,9 @@
 			}
 		</script>
 	    <script type="text/javascript">
-			console.log(Cookiebot.consent.userConsentGiven);
-		 	if (!Cookiebot.consent.userConsentGiven) {
-  				// Listen for the first consent action
-  				window.addEventListener('CookiebotOnAccept', () => {
-    			console.log('User accepted for the first time');
-  			});
-  			window.addEventListener('CookiebotOnDecline', () => {
-    			console.log('User declined for the first time');
-  			});
-		}
+			function CookiebotOnDialogDisplay() {
+				console.log("cookiebot displaying");
+			}
 	  	</script>
 		<script
 		src="https://code.jquery.com/jquery-3.7.1.slim.js"
