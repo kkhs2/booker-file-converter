@@ -60,8 +60,8 @@ const interfaceData = {
       regex: /^(.{9})(.{8})(.{6})(.{1})(.{1})(.{1})(.{1})(.{100})(.{1})(.{1})(.{8})(.{100})(.{1})(.{1})(.{8})(.{1})(.{1})(.{8})(.{32})(.{1})(.{1})(.{32})(.{1})(.{1})(.{36})(.{17})(.{30})(.{1})$/d
     },
     custcredit: {
-      heading: 'Customer Number,Customers Total Credit Limit,Overall Credit Limit status **,Payment Day Number,No of credit days,Extended Credit Days,No of weeks credit,First Payment date,Terms',
-      regex: /^(.{9})(.{20})(.{2})(.{1})(.{2})(.{1})(.{2})(.{8})(.{100})$/d
+      heading: 'Customer Number,Customers Total Credit Limit,Overall Credit Limit status **,Payment Day Number,No of credit days,Extended Credit Days,No of weeks credit,First Payment date,Terms,VDD Email Address,BACS,KYC,DD',
+      regex: /^(.{9})(.{20})(.{2})(.{1})(.{2})(.{1})(.{2})(.{8})(.{100})(.{100})(.{1})(.{1})(.{1})$/d
     },
     depot: {
       heading: 'INTDEPOT-STORE-ID,INTDEPOT-HUB-ID,INTDEPOT-NAME,INTDEPOT-ADDR1,INTDEPOT-ADDR2,INTDEPOT-ADDR3,INTDEPOT-ADDR4,INTDEPOT-ADDR5,INTDEPOT-ADDR6,INTDEPOT-CONTACT,INTDEPOT-EMAIL,INTDEPOT-TEL,INTDEPOT-FAX,INTDEPOT-ISDEL,INTDEPOT-COUNTRY',

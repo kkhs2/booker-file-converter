@@ -188,6 +188,7 @@ function getType(file) {
   const type = file.name.match(
     /((EBIZ_|CORD\d*_|SAP2WEB_|WEB2SAP_|OURBOOKER))(?<interface>[a-z]+)(.*)/i
   );
+  console.log(type);
   const fileType = type.groups.interface
     ? type.groups.interface.toLowerCase()
     : "";
