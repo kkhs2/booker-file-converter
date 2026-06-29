@@ -57,8 +57,6 @@ const convertLine = (line, regex, groups) => {
   return line.replace(regex, groups);
 };
 
-/* claims is different as well? haven't seen the data for this yet so this is a placeholder at the moment */
-const processClaimsInterface = () => {};
 
 const headerWhichLine = (line) => {
   return interfaceData["orders"]["oc"][line.charAt(2) - 1].regex;
@@ -113,7 +111,10 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
 
     let matches = (header != "oc") ? regex.exec(line) : regexWhichLine(line).exec(line);
 
+    console.log(matches);
+
     let currentLine = convertLine(line, regex, captureGroups);
+
 
     /* need a way to construct the lines, to add each oh type line to od type */
     if (header == "oh") {
@@ -188,7 +189,6 @@ function getType(file) {
   const type = file.name.match(
     /((EBIZ_|CORD\d*_|SAP2WEB_|WEB2SAP_|OURBOOKER))(?<interface>[a-z]+)(.*)/i
   );
-  console.log(type);
   const fileType = type.groups.interface
     ? type.groups.interface.toLowerCase()
     : "";
@@ -218,7 +218,6 @@ function readFileAsText(file, index, fileType) {
         let interfaceLength = interfaceData[fileType].heading.split(",").length;
       
         let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
-
         lines.map((line) => {
           if (line.length > 0) {
             let matches = regex.exec(line);
