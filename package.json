@@ -45,8 +45,7 @@
     "react-google-recaptcha": "^3.1.0",
     "swiper": "^11.1.15",
     "tailwind-merge": "^3.0.1",
-    "typeface-lato": "^1.1.13",
-    "webpack-dev-server": "^5.2.2"
+    "typeface-lato": "^1.1.13"
   },
   "scripts": {
     "build": "webpack --mode production"

@@ -66,7 +66,72 @@ const regexWhichLine = (line) => {
   return interfaceData["orders"]["oc"][line.charAt(2) - 1].regex;
 }
 
-/* Order interface is a lot different to the others */
+
+/* Order interface is different to the others */
+const processClaimsInterface = (data, lines, type, fileIndex) => {
+  let claimsData = [];
+  let claimsNumbers = [];
+  let headerIndexes = [];
+  if (fileIndex == 0) {
+    claimsData.push(
+      data["ch"].heading +
+        "," +
+        data["cd"].heading + "\n"
+    );
+  }
+
+  lines.map((line, i) => {
+    let header = line.substring(0, 2).toLowerCase();
+    let interfaceLength = interfaceData[type][header].heading.split(",").length;
+    let regex = interfaceData[type][header].regex;
+
+    let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
+
+    let matches = regex.exec(line);
+
+    let currentLine = convertLine(line, regex, captureGroups);
+
+    if (header == "ch") {
+      claimsNumbers.push({ claimNumber: currentLine.split(",")[1], start: i });
+      headerIndexes.push(i);
+    }
+
+    let groupIndices = matches.indices.groups
+      ? Object.values(matches.indices.groups)
+      : null;
+
+    let groups = matches.groups ? matches.groups : null;
+
+    if (groups != null) {
+      processDecimalValues(groups, groupIndices, matches);
+    }
+
+    let finalLine = currentLine.split(",");
+    if (header == "cd") {
+      headerLine = convertLine(
+        lines[headerIndexes[headerIndexes.length - 1]],
+        interfaceData[type]["ch"].regex,
+        captureGroupString(
+          interfaceData[type]["ch"].heading.split(",").length
+        ).slice(0, -1) + ","
+      );
+
+      for (let j = 0; j < convertedValuesIndexes.length; j++) {
+        let index = convertedValuesIndexes[j] - 1;
+        finalLine[index] = convertedValues[j];
+      }
+
+      let headerFinalLine = headerLine.concat(finalLine + "\n");
+      claimsData.push(headerFinalLine);
+      
+    }
+    
+  });
+
+  return claimsData;
+}
+
+/* Order interface is different to the others */
 const processOrderInterface = (data, lines, type, fileIndex) => {
   let ordersData = [];
   let headerIndexes = [];
@@ -111,10 +176,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
 
     let matches = (header != "oc") ? regex.exec(line) : regexWhichLine(line).exec(line);
 
-    console.log(matches);
-
     let currentLine = convertLine(line, regex, captureGroups);
-
 
     /* need a way to construct the lines, to add each oh type line to od type */
     if (header == "oh") {
@@ -122,12 +184,13 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
       headerIndexes.push(i);
     }
 
-    if (header == "ot") {
+    /*if (header == "ot") {
       let orderObj = orderNumbers.find(
         (order) => order.orderNumber == currentLine.split(",")[3].substring(1)
       );
       orderObj.end = i;
-    }
+    
+    }*/
 
     let groupIndices = matches.indices.groups
       ? Object.values(matches.indices.groups)
@@ -180,6 +243,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     let orderOcLine = orderOcLines.map(o => o.line).join("").slice(0, -1);
     finalOrdersData.push(line + ",".concat(orderOcLine.slice(0, 537)) + "\n");
   });
+  console.log(finalOrdersData);
   return finalOrdersData;
 };
 
@@ -205,6 +269,13 @@ function readFileAsText(file, index, fileType) {
 
       if (fileType == "orders") {
         csvData = processOrderInterface(
+          interfaceData[fileType],
+          lines,
+          fileType,
+          index
+        );
+      } else if (fileType == "claims") {
+        csvData = processClaimsInterface(
           interfaceData[fileType],
           lines,
           fileType,

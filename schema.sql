@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS Product (
+/*CREATE TABLE IF NOT EXISTS Product (
   Id int primary key,
   StoreId int,
   Hub int,
@@ -262,4 +262,84 @@ CREATE TABLE IF NOT EXISTS SpendAndSave (
   StartOfPeriodDate int,
   LastPeriodStartDate int,
   LastPeriodEndDate int
+);
+
+CREATE TABLE IF NOT EXISTS ClaimStatus (
+  Id int primary key,
+  Reference int,
+  Status int,
+  LineNo int,
+  SuCode int,
+  Value int,
+  StatusCode int,
+  StatusReasonCode int,
+  StatusSubReasonCode int,
+  AddInfo int,
+  DcComments int,
+  AppDate int,
+  AppTime int,
+  ChgDate int,
+  ChgTime int,
+  ClaimDlCaseQty int,
+  ClaimDlUnitQty int
+);
+
+CREATE TABLE IF NOT EXISTS PriceList (
+  Id int primary key,
+  NacNo int,
+  SuCode int,
+  ArticleCode int,
+  Price int,
+  ItmInSellUnt int,
+  UnitId int,
+  CustOwnCode int,
+  IsDel int,
+  Rsp int
+);
+
+CREATE TABLE IF NOT EXISTS Supplier ( 
+  Id int primary key,
+  Field int,
+  SuppName int,
+  SuppStatus int,
+  Street2 int,
+  Street3 int,
+  StreetNo int,
+  Street4 int,
+  Street5 int,
+  Town int,
+  County int,
+  PostCode int,
+  ContactTitle int,
+  ContactInits int,
+  ContactSurname int,
+  Telephone int,
+  MobilePhone int,
+  LtEmail int,
+  LongtailType int
+);
+
+*/
+
+
+CREATE TABLE InterfaceType (
+  Id INT IDENTITY(1, 1) PRIMARY KEY,
+  Name VARCHAR(100) NOT NULL UNIQUE
+);
+
+
+CREATE TABLE InterfaceField (
+  Id INT IDENTITY(1, 1) PRIMARY KEY,
+  Field VARCHAR(100),
+  StartPosition INT NOT NULL,
+  EndPosition INT NOT NULL,
+  Length INT NOT NULL,
+);
+
+
+INSERT INTO InterfaceType (Name)
+VALUES ('datafeed', 'stdprice', 'fasprice', 'clbprice', 'prodref', 'product', 'enhancedhistory', 'category', 'productgroup', 'customer', 'depot', 'spendandsave', 'longtailproductnew', 'tnareasons', 'custpref', 'custcredit', 'depot', 'dropshipsuppcust', 'orders', 'bestsellers', 'claimstatus', 'pricelist', 'promo', 'promoset', 'promotostore', 'productinpromoset', 'supplier', 'brpschedule', 'custwebtosap');
+
+INSERT INTO InterfaceField (
+
 );
