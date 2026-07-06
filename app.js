@@ -1,5 +1,6 @@
 let convertedValues = [];
 let convertedValuesIndexes = [];
+const jsonObjects = [];
 
 const decimalValue = (decimal, value) => {
   return parseFloat(value).toFixed(decimal);
@@ -75,8 +76,8 @@ const processClaimsInterface = (data, lines, type, fileIndex) => {
   if (fileIndex == 0) {
     claimsData.push(
       data["ch"].heading +
-        "," +
-        data["cd"].heading + "\n"
+      "," +
+      data["cd"].heading + "\n"
     );
   }
 
@@ -123,11 +124,10 @@ const processClaimsInterface = (data, lines, type, fileIndex) => {
 
       let headerFinalLine = headerLine.concat(finalLine + "\n");
       claimsData.push(headerFinalLine);
-      
-    }
-    
-  });
 
+    }
+
+  });
   return claimsData;
 }
 
@@ -158,16 +158,16 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
 
     ordersData.push(
       data["oh"].heading +
-        "," +
-        data["od"].heading +
-        "," +
-        ocHeaders.join(",")
+      "," +
+      data["od"].heading +
+      "," +
+      ocHeaders.join(",")
     );
   }
 
   filteredLines.map((line, i) => {
     let header = line.substring(0, 2).toLowerCase();
-    
+
     let interfaceLength = (header != "oc") ? interfaceData[type][header].heading.split(",").length : 3;
 
     let regex = (header != "oc") ? interfaceData[type][header].regex : headerWhichLine(line);
@@ -183,14 +183,6 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
       orderNumbers.push({ orderNumber: currentLine.split(",")[4], start: i });
       headerIndexes.push(i);
     }
-
-    /*if (header == "ot") {
-      let orderObj = orderNumbers.find(
-        (order) => order.orderNumber == currentLine.split(",")[3].substring(1)
-      );
-      orderObj.end = i;
-    
-    }*/
 
     let groupIndices = matches.indices.groups
       ? Object.values(matches.indices.groups)
@@ -222,7 +214,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     /* need to find and add the order ID to each line, so then we can add this to the oc line to work out which order these belong to */
     if (header == "oc") {
       let ocLine = convertLine(line, interfaceData[type]["oc"][line.charAt(2) - 1].regex, captureGroupString(interfaceData[type]["oc"][line.charAt(2) - 1].heading.split(",").length).slice(0, -1) + ",");
-      ocLines.push({line: ocLine, index: i});
+      ocLines.push({ line: ocLine, index: i });
     }
   });
 
@@ -243,7 +235,6 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     let orderOcLine = orderOcLines.map(o => o.line).join("").slice(0, -1);
     finalOrdersData.push(line + ",".concat(orderOcLine.slice(0, 537)) + "\n");
   });
-  console.log(finalOrdersData);
   return finalOrdersData;
 };
 
@@ -263,7 +254,7 @@ function readFileAsText(file, index, fileType) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      let csvData = [];
+      const csvData = [];
       const splitLines = reader.result.split(/\r\n|\n/);
       const lines = splitLines.filter((line) => line.length > 0).map(line => line.replace(/,/g, " "));
 
@@ -282,12 +273,12 @@ function readFileAsText(file, index, fileType) {
           index
         );
       } else {
-          if (index == 0) {
-            csvData.push(interfaceData[fileType].heading + "\n");
-          }
+        if (index == 0) {
+          csvData.push(interfaceData[fileType].heading + "\n");
+        }
         let regex = interfaceData[fileType].regex;
         let interfaceLength = interfaceData[fileType].heading.split(",").length;
-      
+
         let captureGroups = captureGroupString(interfaceLength).slice(0, -1);
         lines.map((line) => {
           if (line.length > 0) {
@@ -311,12 +302,38 @@ function readFileAsText(file, index, fileType) {
             }
           }
         });
+
+        //const topLine = interfaceData[fileType].heading.split(",");
+        //downloadJson(topLine, csvData);
       }
       resolve(csvData.join(""));
     };
     reader.onerror = reject;
     reader.readAsText(file);
   });
+}
+
+
+
+
+
+
+async function downloadJson(headers, csvData) {
+  const objectKeys = headers.map(o => o.trim().toLowerCase().replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")));
+  const convertedJson = csvData.map((data, i) => {
+    if (i > 0) {
+      const splitData = data.split(",");
+      const obj = splitData.map((d, i) => {
+        return { [objectKeys[i]]: d.trim() }
+      });
+      return obj.reduce((acc, obj) => {
+        return { ...acc, ...obj };
+      }, {});
+    }
+  });
+
+  document.getElementById("downloadJson").innerHTML = "";
+  return convertedJson;
 }
 
 async function readFile(files) {
@@ -336,7 +353,7 @@ async function readFile(files) {
       return await readFileAsText(file, index, fileType);
     })
   );
-  
+
   return new Promise((resolve) => {
     resolve(downloadFile(fileType, processedData));
   });
@@ -355,16 +372,35 @@ async function downloadFile(type, data) {
   const objUrl = URL.createObjectURL(convertedFile);
 
   const convertedFileLink = document.createElement("a");
-  
+
+  const convertedJsonLink = document.createElement("a");
+
   convertedFileLink.setAttribute(
+    "class",
+    "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+  );
+
+  convertedJsonLink.setAttribute(
     "class",
     "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
   );
 
   convertedFileLink.setAttribute("href", objUrl);
   convertedFileLink.setAttribute("download", type + "ConvertedFile.csv");
-  convertedFileLink.textContent = "Click to download converted " + type.toUpperCase() + " file";
+  convertedFileLink.textContent = "Click to download converted " + type.toUpperCase() + " CSV file";
+
+  convertedJsonLink.setAttribute("href", objUrl);
+  convertedJsonLink.setAttribute("download", type + "JsonFile.csv");
+  convertedJsonLink.textContent = "Click to download " + type.toUpperCase() + " JSON file";
+
+
   document.getElementById("loader").remove();
   document.getElementById("downloadFile").append(convertedFileLink);
+
+  document.getElementById("downloadJson").append(convertedJsonLink);
+
 }
+
+
+
 
