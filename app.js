@@ -255,8 +255,10 @@ function readFileAsText(file, index, fileType) {
     const reader = new FileReader();
     reader.onload = () => {
       const csvData = [];
+      const jsonData = [];
       const splitLines = reader.result.split(/\r\n|\n/);
       const lines = splitLines.filter((line) => line.length > 0).map(line => line.replace(/,/g, " "));
+      const topLine = interfaceData[fileType].heading.split(",");
 
       if (fileType == "orders") {
         csvData = processOrderInterface(
@@ -302,11 +304,11 @@ function readFileAsText(file, index, fileType) {
             }
           }
         });
-
-        //const topLine = interfaceData[fileType].heading.split(",");
-        //downloadJson(topLine, csvData);
       }
-      resolve(csvData.join(""));
+      resolve({
+        csv: csvData.join(""),
+        json: downloadJson(topLine, csvData)
+      });
     };
     reader.onerror = reject;
     reader.readAsText(file);
@@ -318,21 +320,18 @@ function readFileAsText(file, index, fileType) {
 
 
 
-async function downloadJson(headers, csvData) {
+function downloadJson(headers, csvData) {
   const objectKeys = headers.map(o => o.trim().toLowerCase().replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")));
-  const convertedJson = csvData.map((data, i) => {
-    if (i > 0) {
-      const splitData = data.split(",");
-      const obj = splitData.map((d, i) => {
-        return { [objectKeys[i]]: d.trim() }
-      });
-      return obj.reduce((acc, obj) => {
-        return { ...acc, ...obj };
-      }, {});
-    }
+  const convertedJson = csvData.slice(1).map((data, i) => {
+    const splitData = data.split(",");
+    const obj = splitData.map((d, i) => {
+      return { [objectKeys[i]]: d.trim() }
+    });
+    return obj.reduce((acc, obj) => {
+      return { ...acc, ...obj };
+    }, {});
   });
 
-  document.getElementById("downloadJson").innerHTML = "";
   return convertedJson;
 }
 
@@ -354,8 +353,11 @@ async function readFile(files) {
     })
   );
 
+  const csv = processedData.map(f => f.csv);
+  const json = processedData.flatMap(f => f.json);
+
   return new Promise((resolve) => {
-    resolve(downloadFile(fileType, processedData));
+    resolve(downloadFile(fileType, csv, json));
   });
 }
 
@@ -364,39 +366,48 @@ async function loadingSpinner(files) {
   const result = await readFile(files);
 }
 
-async function downloadFile(type, data) {
-  const convertedFile = new File(data, {
-    type: "text/csv;charset=utf-8",
-  });
+async function downloadFile(type, csvData, jsonData) {
+   const csvFile = new File(
+    [csvData.join("")],
+    `${type}ConvertedFile.csv`,
+    {
+      type: "text/csv;charset=utf-8",
+    }
+  );
 
-  const objUrl = URL.createObjectURL(convertedFile);
+  const jsonFile = new File(
+    [JSON.stringify(jsonData, null, 2)],
+    `${type}JsonFile.json`,
+    {
+      type: "application/json",
+    }
+  );
+
+  const csvUrl = URL.createObjectURL(csvFile);
+  const jsonUrl = URL.createObjectURL(jsonFile);
+
 
   const convertedFileLink = document.createElement("a");
-
   const convertedJsonLink = document.createElement("a");
 
-  convertedFileLink.setAttribute(
-    "class",
-    "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-  );
+  const classes =
+    "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800";
 
-  convertedJsonLink.setAttribute(
-    "class",
-    "focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-3xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-  );
 
-  convertedFileLink.setAttribute("href", objUrl);
-  convertedFileLink.setAttribute("download", type + "ConvertedFile.csv");
-  convertedFileLink.textContent = "Click to download converted " + type.toUpperCase() + " CSV file";
+  convertedFileLink.className = classes;
+  convertedJsonLink.className = classes;
 
-  convertedJsonLink.setAttribute("href", objUrl);
-  convertedJsonLink.setAttribute("download", type + "JsonFile.csv");
-  convertedJsonLink.textContent = "Click to download " + type.toUpperCase() + " JSON file";
+  convertedFileLink.href = csvUrl;
+  convertedFileLink.download =  `${type}ConvertedFile.csv`;
+  convertedFileLink.textContent = `Click to download converted ${type.toUpperCase()} CSV file`;
+
+  convertedJsonLink.href = jsonUrl;
+  convertedJsonLink.download = `${type}JsonFile.json`;
+  convertedJsonLink.textContent = `Click to download ${type.toUpperCase()} JSON file`;
 
 
   document.getElementById("loader").remove();
   document.getElementById("downloadFile").append(convertedFileLink);
-
   document.getElementById("downloadJson").append(convertedJsonLink);
 
 }
