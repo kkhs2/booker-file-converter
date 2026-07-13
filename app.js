@@ -138,7 +138,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
   let headerLine = [];
   let ocLines = [];
   let orderNumbers = [];
-  let ocHeaders = [];;
+  let ocHeaders = [];
 
   let filteredLines = lines.filter(
     (line) =>
@@ -165,6 +165,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     );
   }
 
+
   filteredLines.map((line, i) => {
     let header = line.substring(0, 2).toLowerCase();
 
@@ -180,7 +181,7 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
 
     /* need a way to construct the lines, to add each oh type line to od type */
     if (header == "oh") {
-      orderNumbers.push({ orderNumber: currentLine.split(",")[4], start: i });
+      orderNumbers.push({ orderNumber: currentLine.split(",")[4], start: i});
       headerIndexes.push(i);
     }
 
@@ -218,15 +219,15 @@ const processOrderInterface = (data, lines, type, fileIndex) => {
     }
   });
 
-  let orderNumbersArr = orderNumbers.filter(order => Object.hasOwn(order, "end"));
-
+  /*let orderNumbersArr = orderNumbers.filter(order => Object.hasOwn(order, "end"));
+  
   orderNumbersArr.map((order) => {
     ocLines.map((oc) => {
       if (oc.index > order.start && oc.index < order.end) {
         oc.orderNumber = order.orderNumber;
       }
     });
-  });
+  });*/
 
   const finalOrdersData = [];
   ordersData.map(line => {
@@ -254,11 +255,10 @@ function readFileAsText(file, index, fileType) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
-      const csvData = [];
-      const jsonData = [];
+      let csvData = [];
+      let jsonData = [];
       const splitLines = reader.result.split(/\r\n|\n/);
       const lines = splitLines.filter((line) => line.length > 0).map(line => line.replace(/,/g, " "));
-      const topLine = interfaceData[fileType].heading.split(",");
 
       if (fileType == "orders") {
         csvData = processOrderInterface(
@@ -305,9 +305,10 @@ function readFileAsText(file, index, fileType) {
           }
         });
       }
+      const topLine = (fileType == "orders" || fileType == "claims") ? csvData[0].split(",") : interfaceData[fileType].heading.split(",");
       resolve({
         csv: csvData.join(""),
-        json: downloadJson(topLine, csvData)
+        json: downloadJson(topLine, csvData, fileType)
       });
     };
     reader.onerror = reject;
@@ -317,11 +318,34 @@ function readFileAsText(file, index, fileType) {
 
 
 
+function convertJsonObjectKeys(headers) {
+  return headers.map(o => o.trim().toLowerCase().replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")));
+}
 
 
+function downloadJson(headers, csvData, fileType) {
+  const objectKeys = convertJsonObjectKeys(headers);
+  if (fileType == "orders") {
+    const orderOhHeading = interfaceData[fileType]["oh"].heading.split(",");
 
-function downloadJson(headers, csvData) {
-  const objectKeys = headers.map(o => o.trim().toLowerCase().replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : "")));
+    const convertedJson = csvData.slice(1).map((data, i) => {
+      const splitData = data.split(",");
+      /*const obj = splitData.map((d, i) => {
+        return { [orderOhHeading[i]]: d.trim() }
+      });*/
+
+      
+
+      /*return obj.reduce((acc, obj) => {
+        return { ...acc, ...obj };
+      }, {});*/
+    });
+  }
+
+  if (fileType == "claims") {
+
+  }
+
   const convertedJson = csvData.slice(1).map((data, i) => {
     const splitData = data.split(",");
     const obj = splitData.map((d, i) => {
@@ -367,7 +391,7 @@ async function loadingSpinner(files) {
 }
 
 async function downloadFile(type, csvData, jsonData) {
-   const csvFile = new File(
+  const csvFile = new File(
     [csvData.join("")],
     `${type}ConvertedFile.csv`,
     {
@@ -398,7 +422,7 @@ async function downloadFile(type, csvData, jsonData) {
   convertedJsonLink.className = classes;
 
   convertedFileLink.href = csvUrl;
-  convertedFileLink.download =  `${type}ConvertedFile.csv`;
+  convertedFileLink.download = `${type}ConvertedFile.csv`;
   convertedFileLink.textContent = `Click to download converted ${type.toUpperCase()} CSV file`;
 
   convertedJsonLink.href = jsonUrl;
